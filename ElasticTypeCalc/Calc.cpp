@@ -6,7 +6,7 @@ Calc::Calc(std::string exp) {
 	this->exp = exp;
 }
 
-CALC_TYPE Calc::comp()
+TypedNum Calc::comp()
 {
 	if (!this->root) {
 		this->root = new CalcNode(this->exp);

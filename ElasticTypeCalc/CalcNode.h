@@ -1,7 +1,5 @@
 #pragma once
 
-#define CALC_TYPE TypedNum
-
 #include "TypedNum.h"
 #include <string>
 
@@ -12,13 +10,13 @@ public:
 	~CalcNode();
 	
 	void parse();
-	CALC_TYPE comp();
+	TypedNum comp();
 
 	enum NodeType { NUM, SUM, SUB, MUL, DIV, POW, BRC };
 private:
 	NodeType type;
 	std::string exp;
-	CALC_TYPE val;
+	TypedNum val;
 	CalcNode* left;
 	CalcNode* right;
 };

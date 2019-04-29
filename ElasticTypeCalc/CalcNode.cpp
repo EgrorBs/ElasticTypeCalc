@@ -99,10 +99,10 @@ void CalcNode::parse() {
 	}*/
 
 	this->type = NUM;
-	this->val = CALC_TYPE(this->exp);
+	this->val = TypedNum(this->exp);
 }
 
-CALC_TYPE CalcNode::comp() {
+TypedNum CalcNode::comp() {
 	switch (this->type) {
 		case NUM: return this->val;
 		case SUM: return this->left->comp() + this->right->comp();

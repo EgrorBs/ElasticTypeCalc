@@ -11,9 +11,14 @@ TypedNum Calc::comp()
 	if (!this->root) {
 		this->root = new CalcNode(this->exp);
 		this->root->parse();
+		this->print();
 	}
 
 	return this->root->comp();
+}
+
+void Calc::print() {
+	this->root->print(0);
 }
 
 

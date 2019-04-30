@@ -9,6 +9,7 @@ class Calc
 public:
 	Calc(std::string exp = "");
 	TypedNum comp();
+	void print();
 	~Calc();
 private:
 	std::string exp;

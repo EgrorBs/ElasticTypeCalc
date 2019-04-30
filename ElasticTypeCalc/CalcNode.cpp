@@ -2,6 +2,7 @@
 #include "CalcNode.h"
 
 #include <array>
+#include <iostream>
 
 CalcNode::CalcNode(std::string exp) {
 	this->exp = exp;
@@ -115,4 +116,30 @@ TypedNum CalcNode::comp() {
 			throw std::exception("Comp: unknown type!");
 		break;
 	}
+}
+
+void CalcNode::print(int tabsC) {
+	std::string tabs;
+	for (int i = 0; i < tabsC; i++)
+		tabs += "|  ";
+
+	if (this->left && this->type != BRC)
+		this->left->print(tabsC + 1);
+
+	if (this->left && this->type == BRC) {
+		std::cout << tabs << " (" << std::endl;
+		this->left->print(tabsC);
+	}
+	std::cout << tabs;
+	switch (this->type) {
+		case NUM: std::cout << this->val.toString() << std::endl; break;
+		case SUM: std::cout << "|  + (*" << this->comp().toString() << "*)" << std::endl; break;
+		case SUB: std::cout << "|  - (*" << this->comp().toString() << "*)" << std::endl; break;
+		case MUL: std::cout << "|  * (*" << this->comp().toString() << "*)" << std::endl; break;
+		case DIV: std::cout << "|  / (*" << this->comp().toString() << "*)" << std::endl; break;
+		case POW: std::cout << "|  ^ (*" << this->comp().toString() << "*)" << std::endl; break;
+		case BRC: std::cout << " )" << std::endl; break;
+	}
+	if (this->right)
+		this->right->print(tabsC + 1);
 }

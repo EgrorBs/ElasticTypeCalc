@@ -11,6 +11,7 @@ public:
 	
 	void parse();
 	TypedNum comp();
+	void print(int tabs);
 
 	enum NodeType { NUM, SUM, SUB, MUL, DIV, POW, BRC };
 private:

@@ -67,7 +67,7 @@ ElasticType operator+(const ElasticType& left, const ElasticType& right) {
 	}
 	if (out.count(""))
 		out[""] = 1;
-	return out;
+	return ElasticType(out);
 }
 
 ElasticType operator-(const ElasticType& left, const ElasticType& right) {
@@ -79,7 +79,7 @@ ElasticType operator-(const ElasticType& left, const ElasticType& right) {
 	}
 	if (out.count(""))
 		out[""] = 1;
-	return out;
+	return ElasticType(out);
 }
 
 ElasticType operator*(const ElasticType& left, int pow) {
@@ -91,7 +91,7 @@ ElasticType operator*(const ElasticType& left, int pow) {
 	}
 	if (out.count(""))
 		out[""] = 1;
-	return out;
+	return ElasticType(out);
 }
 
 bool operator<(const ElasticType& left, const ElasticType& right) {

@@ -154,12 +154,14 @@
   <ItemGroup>
     <ClInclude Include="Calc.h" />
     <ClInclude Include="CalcNode.h" />
+    <ClInclude Include="ElasticType.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TypedNum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Calc.cpp" />
     <ClCompile Include="CalcNode.cpp" />
+    <ClCompile Include="ElasticType.cpp" />
     <ClCompile Include="ElasticTypeCalc.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

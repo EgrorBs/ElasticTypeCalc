@@ -52,7 +52,7 @@ TypedNum::TypedNum(std::string in) {
 	}
 }
 
-TypedNum::TypedNum(std::map<std::string, double> vals) {
+TypedNum::TypedNum(std::map<ElasticType, double> vals) {
 	this->vals = vals;
 }
 
@@ -61,7 +61,7 @@ std::string TypedNum::toString() {
 	for (auto val : this->vals) {
 		if (ret.length() > 0)
 			ret += (val.second >= 0)?"+":"";
-		ret += cutLastNull(std::to_string(val.second)) + val.first;
+		ret += cutLastNull(std::to_string(val.second)) + val.first.toString();
 	}
 	return ret;
 }
@@ -71,7 +71,7 @@ TypedNum::~TypedNum()
 }
 
 TypedNum operator+(const TypedNum& left, const TypedNum& right) {
-	std::map<std::string, double> out = left.vals;
+	std::map<ElasticType, double> out = left.vals;
 	for (auto val : right.vals) {
 		if (out.count(val.first) > 0)
 			out[val.first] += val.second;
@@ -82,7 +82,7 @@ TypedNum operator+(const TypedNum& left, const TypedNum& right) {
 }
 
 TypedNum operator-(const TypedNum& left, const TypedNum& right) {
-	std::map<std::string, double> out = left.vals;
+	std::map<ElasticType, double> out = left.vals;
 	for (auto val : right.vals) {
 		if (out.count(val.first) > 0)
 			out[val.first] -= val.second;
@@ -93,31 +93,50 @@ TypedNum operator-(const TypedNum& left, const TypedNum& right) {
 }
 
 TypedNum operator*(const TypedNum& left, const TypedNum& right) {
-	std::map<std::string, double> out;
+	std::map<ElasticType, double> out;
 	for (auto rval : right.vals) {
 		for (auto lval : left.vals) {
-			if (lval.first != "" && rval.first != "")
-				out[lval.first + "*" + rval.first] = lval.second * rval.second;
+			if (lval.first.types.size() != 0 && rval.first.types.size() != 0)
+				out[lval.first + rval.first] = lval.second * rval.second;
 			else
-				out[(lval.first != "")?lval.first:rval.first] = lval.second * rval.second;
+				out[(lval.first.types.size() != 0)?lval.first:rval.first] = lval.second * rval.second;
 		}
 	}
 	return TypedNum(out);
 }
 
 TypedNum operator/(const TypedNum& left, const TypedNum& right) {
-	std::map<std::string, double> out;
+	std::map<ElasticType, double> out;
 	for (auto rval : right.vals) {
 		for (auto lval : left.vals) {
-			if (lval.first != "" && rval.first != "")
-				out[lval.first + "/" + rval.first] = lval.second / rval.second;
+			if (lval.first.types.size() != 0 && rval.first.types.size() != 0)
+				out[lval.first - rval.first] = lval.second / rval.second;
 			else
-				out[(lval.first != "") ? lval.first : rval.first] = lval.second / rval.second;
+				out[(lval.first.types.size() != 0) ? lval.first : rval.first] = lval.second / rval.second;
 		}
 	}
 	return TypedNum(out);
 }
 
 TypedNum operator^(const TypedNum& left, const TypedNum& right) {
-	return TypedNum({ {"PowWip", 0} });
+	std::map<ElasticType, double> out;
+	std::map<ElasticType, int> muls;
+	if (right.vals.size() != 1 || right.vals.count(ElasticType("")) != 1)
+		throw "pow to non-simple-number";
+	for (int i = 0; i < right.vals.at(ElasticType("")); i++) {
+		for (auto lval : left.vals) {
+			if (out.count(lval.first) > 0) {
+				out[lval.first] *= lval.second;
+				muls[lval.first] += 1;
+			} else
+				out[lval.first] = lval.second;
+		}
+	}
+	double tempVal = 0;
+	std::string tempType = "";
+	for (auto mul : muls) {
+		out[mul.first * mul.second] = out[mul.first];
+		out.erase(mul.first);
+	}
+	return TypedNum(out);
 }

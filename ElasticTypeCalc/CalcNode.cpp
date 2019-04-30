@@ -79,7 +79,7 @@ void CalcNode::parse() {
 		}
 	}
 	brc = 0;
-	/*for (int i = this->exp.length() - 1; i >= 0; i--) {
+	for (int i = this->exp.length() - 1; i >= 0; i--) {
 		char sym = this->exp[i];
 
 		if (sym == ')') brc++;
@@ -96,7 +96,7 @@ void CalcNode::parse() {
 
 			return;
 		}
-	}*/
+	}
 
 	this->type = NUM;
 	this->val = TypedNum(this->exp);

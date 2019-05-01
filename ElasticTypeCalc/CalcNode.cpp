@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CalcNode.h"
 
+#include <functional>
 #include <array>
 #include <iostream>
 
@@ -10,6 +11,11 @@ CalcNode::CalcNode(std::string exp) {
 
 CalcNode::~CalcNode()
 {
+	if (this->left)
+		delete this->left;
+
+	if (this->right)
+		delete this->right;
 }
 
 void CalcNode::parse() {
@@ -33,8 +39,6 @@ void CalcNode::parse() {
 		this->left->parse();
 		return;
 	}
-
-
 
 	for (int i = this->exp.length() - 1; i >= 0; i--) {
 		char sym = this->exp[i];
@@ -104,21 +108,37 @@ void CalcNode::parse() {
 }
 
 TypedNum CalcNode::comp() {
+	if (!isCached) {
+		switch (this->type) {
+			case NUM: break;
+			case SUM: this->val = this->left->comp() + this->right->comp(); break;
+			case SUB: this->val = this->left->comp() - this->right->comp(); break;
+			case MUL: this->val = this->left->comp() * this->right->comp(); break;
+			case DIV: this->val = this->left->comp() / this->right->comp(); break;
+			case POW: this->val = this->left->comp() ^ this->right->comp(); break;
+			case BRC: this->val = this->left->comp(); break;
+			default: throw std::exception("Comp: unknown type!");
+		}
+		this->isCached = true;
+	}
+	return this->val;
+}
+
+TypedNum CalcNode::cComp() const
+{
 	switch (this->type) {
 		case NUM: return this->val;
-		case SUM: return this->left->comp() + this->right->comp();
-		case SUB: return this->left->comp() - this->right->comp();
-		case MUL: return this->left->comp() * this->right->comp();
-		case DIV: return this->left->comp() / this->right->comp();
-		case POW: return this->left->comp() ^ this->right->comp();
-		case BRC: return this->left->comp();
-		default:
-			throw std::exception("Comp: unknown type!");
-		break;
+		case SUM: return this->left->cComp() + this->right->cComp();
+		case SUB: return this->left->cComp() - this->right->cComp();
+		case MUL: return this->left->cComp() * this->right->cComp();
+		case DIV: return this->left->cComp() / this->right->cComp();
+		case POW: return this->left->cComp() ^ this->right->cComp();
+		case BRC: return this->left->cComp();
+		default: throw std::exception("cComp: unknown type!");
 	}
 }
 
-void CalcNode::print(int tabsC) {
+void CalcNode::print(int tabsC) const {
 	std::string tabs;
 	for (int i = 0; i < tabsC; i++)
 		tabs += "|  ";
@@ -131,13 +151,19 @@ void CalcNode::print(int tabsC) {
 		this->left->print(tabsC);
 	}
 	std::cout << tabs;
+
+	std::string value;
+
+	if (this->isCached)
+		value = "(*" + this->val.toString() + "*)";
+
 	switch (this->type) {
-		case NUM: std::cout << this->val.toString() << std::endl; break;
-		case SUM: std::cout << "|  + (*" << this->comp().toString() << "*)" << std::endl; break;
-		case SUB: std::cout << "|  - (*" << this->comp().toString() << "*)" << std::endl; break;
-		case MUL: std::cout << "|  * (*" << this->comp().toString() << "*)" << std::endl; break;
-		case DIV: std::cout << "|  / (*" << this->comp().toString() << "*)" << std::endl; break;
-		case POW: std::cout << "|  ^ (*" << this->comp().toString() << "*)" << std::endl; break;
+		case NUM: std::cout << "# " << this->val.toString() << std::endl; break;
+		case SUM: std::cout << "|  + " << value << std::endl; break;
+		case SUB: std::cout << "|  - " << value << std::endl; break;
+		case MUL: std::cout << "|  * " << value << std::endl; break;
+		case DIV: std::cout << "|  / " << value << std::endl; break;
+		case POW: std::cout << "|  ^ " << value << std::endl; break;
 		case BRC: std::cout << " )" << std::endl; break;
 	}
 	if (this->right)

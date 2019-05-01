@@ -19,11 +19,14 @@ int main() {
 		std::getline(std::cin, exp);
 		exp = noSpace(exp);
 		Calc calc(exp);
+		calc.parse();
+		std::string ret;
 		try {
-			std::cout << exp << " = " << calc.comp().toString() << std::endl << std::endl;
-		}
-		catch (std::string err) {
+			//ret = calc.comp().toString();
+		} catch (std::string err) {
 			std::cout << "Error: " << err << std::endl << std::endl;
 		}
+		calc.print();
+		std::cout << exp << " = " << calc.comp().toString() << std::endl << std::endl;
 	}
 }

@@ -4,6 +4,8 @@
 
 ElasticType::ElasticType(std::string val) {
 	this->types[val] = 1;
+	if (this->types.count(""))
+		this->types.erase("");
 }
 
 ElasticType::ElasticType(std::map<std::string, int> types) {
@@ -66,7 +68,7 @@ ElasticType operator+(const ElasticType& left, const ElasticType& right) {
 			out.erase(rval.first);
 	}
 	if (out.count(""))
-		out[""] = 1;
+		out.erase("");
 	return ElasticType(out);
 }
 
@@ -78,7 +80,7 @@ ElasticType operator-(const ElasticType& left, const ElasticType& right) {
 			out.erase(rval.first);
 	}
 	if (out.count(""))
-		out[""] = 1;
+		out.erase("");
 	return ElasticType(out);
 }
 
@@ -90,7 +92,7 @@ ElasticType operator*(const ElasticType& left, int pow) {
 			out.erase(val.first);
 	}
 	if (out.count(""))
-		out[""] = 1;
+		out.erase("");
 	return ElasticType(out);
 }
 
@@ -100,16 +102,40 @@ bool operator<(const ElasticType& left, const ElasticType& right) {
 
 	unsigned int leftSum = 0;
 	for (auto pair : left.types) {
-		leftSum += pair.second;
+		leftSum += abs(pair.second);
 	}
 
 	unsigned int rightSum = 0;
 	for (auto pair : right.types) {
-		rightSum += pair.second;
+		rightSum += abs(pair.second);
 	}
 
 	if (leftSum < rightSum)
 		return true;
 
 	return left.toString() < right.toString();
+}
+
+bool operator==(const ElasticType& left, const ElasticType& right) {
+	if (left.types.size() != right.types.size())
+		return false;
+
+	unsigned int leftSum = 0;
+	for (auto pair : left.types) {
+		leftSum += abs(pair.second);
+	}
+
+	unsigned int rightSum = 0;
+	for (auto pair : right.types) {
+		rightSum += abs(pair.second);
+	}
+
+	if (leftSum != rightSum)
+		return false;
+
+	return left.toString() == right.toString();
+}
+
+bool operator!=(const ElasticType& left, const ElasticType& right) {
+	return !(left == right);
 }

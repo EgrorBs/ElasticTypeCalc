@@ -18,45 +18,24 @@ std::vector<std::string> strSplit(std::string str, char sym) {
 	return strs;
 }
 
-double getVal(std::string str) {
-	int i = 0;
-	for (i = 0; i < str.length() && (isdigit(str[i]) || str[i] == '.'); i++);
-	if (i == str.length())
-		return std::stod(str);
-	if (i == 0)
-		return 1;
-	return std::stod(str.substr(0, i));
-}
-
-std::string getType(std::string str) {
-	int i = 0;
-	for (i = 0; i < str.length() && (isdigit(str[i]) || str[i] == '.'); i++);
-	return str.substr(i);
-}
-
-std::string cutLastNull(std::string in) {
-	int i = 0;
-	for (i = in.length() - 1; i >= 0 && (in[i] == '0'); i--);
-	if (in[i] == '.')
-		i--;
-	return in.substr(0, i+1);
-}
-
-TypedNum::TypedNum(std::string in) {
-	if (in.length() == 0)
+TypedNum::TypedNum(std::string in, bool complex) {
+	if (in.length() == 0) {
+		this->vals[ElasticType("")] = 0;
 		return;
-	std::vector<std::string> strs = strSplit(in, '+');
-	for (auto str : strs) {
-		vals[getType(str)] = getVal(str);
-		//std::cout << "type: " << getType(str) << "; val: " << getVal(str) << std::endl;
 	}
+
+	if (complex)
+		for (auto str : strSplit(in, '+'))
+			vals[getType(str)] = getVal(str);
+	else
+		vals[getType(in)] = getVal(in);
 }
 
 TypedNum::TypedNum(std::map<ElasticType, double> vals) {
 	this->vals = vals;
 }
 
-std::string TypedNum::toString() {
+std::string TypedNum::toString() const {
 	std::string ret, type;
 	for (auto val : this->vals) {
 		if (ret.length() > 0)
@@ -73,9 +52,34 @@ TypedNum::~TypedNum()
 {
 }
 
+double TypedNum::getVal(std::string str) {
+	int i = 0;
+	for (i = 0; i < str.length() && (isdigit(str[i]) || str[i] == '.'); i++);
+	if (i == str.length())
+		return std::stod(str);
+	if (i == 0)
+		return 1;
+	return std::stod(str.substr(0, i));
+}
+
+std::string TypedNum::getType(std::string str) {
+	int i = 0;
+	for (i = 0; i < str.length() && (isdigit(str[i]) || str[i] == '.'); i++);
+	return str.substr(i);
+}
+
+std::string TypedNum::cutLastNull(std::string in) {
+	int i = 0;
+	for (i = in.length() - 1; i >= 0 && (in[i] == '0'); i--);
+	if (in[i] == '.')
+		i--;
+	return in.substr(0, i + 1);
+}
+
 TypedNum operator+(const TypedNum& left, const TypedNum& right) {
 	std::map<ElasticType, double> out = left.vals;
 	for (auto val : right.vals) {
+		std::cout << val.first.toString();
 		if (out.count(val.first) > 0)
 			out[val.first] += val.second;
 		else
@@ -99,10 +103,10 @@ TypedNum operator*(const TypedNum& left, const TypedNum& right) {
 	std::map<ElasticType, double> out;
 	for (auto rval : right.vals) {
 		for (auto lval : left.vals) {
-			if (lval.first.types.size() != 0 && rval.first.types.size() != 0)
+			if (lval.first != ElasticType("") && rval.first != ElasticType(""))
 				out[lval.first + rval.first] += lval.second * rval.second;
 			else
-				out[(lval.first.types.size() != 0)?lval.first:rval.first] = lval.second * rval.second;
+				out[(lval.first != ElasticType(""))?lval.first:rval.first] = lval.second * rval.second;
 		}
 	}
 	return TypedNum(out);
@@ -112,10 +116,10 @@ TypedNum operator/(const TypedNum& left, const TypedNum& right) {
 	std::map<ElasticType, double> out;
 	for (auto rval : right.vals) {
 		for (auto lval : left.vals) {
-			if (lval.first.types.size() != 0 && rval.first.types.size() != 0)
+			if (lval.first != ElasticType("") && rval.first != ElasticType(""))
 				out[lval.first - rval.first] = lval.second / rval.second;
 			else
-				out[(lval.first.types.size() != 0) ? lval.first : rval.first] = lval.second / rval.second;
+				out[(lval.first != ElasticType("")) ? lval.first : rval.first] = lval.second / rval.second;
 		}
 	}
 	return TypedNum(out);

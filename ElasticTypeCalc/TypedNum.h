@@ -1,17 +1,22 @@
 #pragma once
 
 #include "ElasticType.h"
+#include <functional>
 #include <string>
 #include <map>
 
 class TypedNum
 {
 public:
-	TypedNum(std::string val = "", bool complex = false);
-	TypedNum(std::map<ElasticType, double> vals);
-	std::string toString() const;
+	explicit TypedNum(std::string val = "", bool complex = false);
+	explicit TypedNum(std::map<ElasticType, double> vals);
 	~TypedNum();
 
+	std::string toString() const;
+
+	TypedNum binOperator(std::function<
+		std::pair<ElasticType, double>(ElasticType, double)
+	> fnc) const;
 private:
 	std::map<ElasticType, double> vals;
 

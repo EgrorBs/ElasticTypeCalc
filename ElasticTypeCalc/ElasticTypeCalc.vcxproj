@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Calc.h" />
+    <ClInclude Include="CalcFncVarController.h" />
     <ClInclude Include="CalcNode.h" />
     <ClInclude Include="ElasticType.h" />
     <ClInclude Include="pch.h" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Calc.cpp" />
+    <ClCompile Include="CalcFncVarController.cpp" />
     <ClCompile Include="CalcNode.cpp" />
     <ClCompile Include="ElasticType.cpp" />
     <ClCompile Include="ElasticTypeCalc.cpp" />

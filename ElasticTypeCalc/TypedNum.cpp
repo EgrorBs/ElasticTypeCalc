@@ -26,9 +26,9 @@ TypedNum::TypedNum(std::string in, bool complex) {
 
 	if (complex)
 		for (auto str : strSplit(in, '+'))
-			vals[getType(str)] = getVal(str);
+			vals[ElasticType(getType(str))] = getVal(str);
 	else
-		vals[getType(in)] = getVal(in);
+		vals[ElasticType(getType(in))] = getVal(in);
 }
 
 TypedNum::TypedNum(std::map<ElasticType, double> vals) {
@@ -46,6 +46,19 @@ std::string TypedNum::toString() const {
 			ret += "[" + type + "]";
 	}
 	return ret;
+}
+
+TypedNum TypedNum::binOperator(std::function<std::pair<ElasticType, double>(ElasticType, double)> fnc) const {
+	std::map<ElasticType, double> out;
+	std::pair<ElasticType, double> retPair;
+	for (auto pair : this->vals) {
+		retPair = fnc(pair.first, pair.second);
+		if (out.count(retPair.first))
+			out[retPair.first] += retPair.second;
+		else
+			out[retPair.first] = retPair.second;
+	}
+	return TypedNum(out);
 }
 
 TypedNum::~TypedNum()

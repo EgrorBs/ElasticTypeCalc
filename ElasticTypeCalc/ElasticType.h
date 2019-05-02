@@ -1,15 +1,20 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <map>
 
 class ElasticType
 {
 public:
-	ElasticType(std::string val = "");
-	ElasticType(std::map<std::string, int> types);
+	explicit ElasticType(std::string val = "");
+	explicit ElasticType(std::map<std::string, int> types);
 	std::string toString() const;
 	~ElasticType();
+
+	ElasticType binOperator(std::function<
+		std::pair<std::string, int>(std::string, int)
+	> fnc) const;
 
 private:
 	std::map<std::string, int> types;

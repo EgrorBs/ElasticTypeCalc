@@ -60,6 +60,19 @@ ElasticType::~ElasticType()
 {
 }
 
+ElasticType ElasticType::binOperator(std::function<std::pair<std::string, int>(std::string, int)> fnc) const {
+	std::map<std::string, int> out;
+	std::pair<std::string, int> retPair;
+	for (auto pair : this->types) {
+		retPair = fnc(pair.first, pair.second);
+		if (out.count(retPair.first))
+			out[retPair.first] += retPair.second;
+		else
+			out[retPair.first] = retPair.second;
+	}
+	return ElasticType(out);
+}
+
 ElasticType operator+(const ElasticType& left, const ElasticType& right) {
 	std::map<std::string, int> out = left.types;
 	for (auto rval : right.types) {

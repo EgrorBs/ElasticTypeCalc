@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CalcFncVarController.h"
 #include "TypedNum.h"
 #include "CalcNode.h"
 #include <string>
@@ -12,10 +13,12 @@ public:
 	TypedNum cComp() const;
 	void parse();
 	void print() const;
+	CalcFncVarController* controller();
 	~Calc();
 private:
 	std::string exp;
 	CalcNode* root = nullptr;
+	CalcFncVarController varFnc;
 
 };
 

@@ -220,16 +220,16 @@ std::string centerAlign(int len, std::string text, char fill = ' ') {
 	return prev + text + post;
 }
 
-std::stringstream CalcNode::toLinedText(int level) const {
+std::stringstream CalcNode::toLinedText(int level, char fillChar, char splitChar) const {
 	std::stringstream ret;
 	if (level < 0) {
 		std::string tmp;
 		bool isEmpty = true;
-		for (int i = 0; i < 25; i++) {
-			tmp = this->toLinedText(i).str();
+		for (int i = 0; i < 256; i++) {
+			tmp = this->toLinedText(i, fillChar, splitChar).str();
 			isEmpty = true;
 			for (auto sym : tmp) {
-				if (sym != ' ' && sym != '|') {
+				if (sym != ' ' && sym != fillChar && sym != splitChar) {
 					isEmpty = false;
 					ret << std::setw(2) << i << ": ";
 					break;
@@ -246,12 +246,23 @@ std::stringstream CalcNode::toLinedText(int level) const {
 	if (level > 0) {
 		if (this->type == NUM || this->type == VAR)
 			return std::stringstream();
+		if (this->type == FNC) {
+			int alN = int(this->symName.length() / 2. + 0.5) + 1;
+			std::string align = centerAlign(alN, "", ' ');
+			ret << align + splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ') + splitChar;
+			return ret;
+		}
+		if (this->type == BRC) {
+			ret << splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ') + splitChar;
+			return ret;
+		}
 		if (this->left != nullptr)
-			ret << centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1).str());
+			ret << centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ');
 		if (this->left != nullptr && this->right != nullptr)
-			ret << "|";
+			ret << splitChar;
 		if (this->right != nullptr)
-			ret << centerAlign(this->right->getExp().length(), this->right->toLinedText(level - 1).str());
+			ret << centerAlign(this->right->getExp().length(), this->right->toLinedText(level - 1, fillChar, splitChar).str(), ' ');
+		return ret;
 	}
 	if (level == 0) {
 		char oper = '\0';
@@ -266,25 +277,25 @@ std::stringstream CalcNode::toLinedText(int level) const {
 		case POW: oper = '^'; break;
 		case BRC:
 			ret << "("
-				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString())
+				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString(), fillChar)
 				<< ")";
 			break;
 		case VAR:
 			ret << this->symName;
 		break;
 		case FNC:
-			ret << this->symName << '(' << centerAlign(this->left->getExp().length(), this->left->cComp().toString()) << ')';
+			ret << this->symName << '(' << centerAlign(this->left->getExp().length(), this->left->cComp().toString(), fillChar) << ')';
 		break;
 		}
 
 		if (oper != '\0') {
 			ret << std::setfill('.')
-				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString())
+				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString(), fillChar)
 				<< oper
-				<< centerAlign(this->right->getExp().length(), this->right->cComp().toString());
+				<< centerAlign(this->right->getExp().length(), this->right->cComp().toString(), fillChar);
 		}
 	}
 
 	return std::stringstream()
-		<< centerAlign(this->exp.length(), ret.str());
+		<< centerAlign(this->exp.length(), ret.str(), fillChar);
 }

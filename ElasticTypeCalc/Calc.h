@@ -12,7 +12,7 @@ public:
 	TypedNum comp();
 	TypedNum cComp() const;
 	void parse();
-	void print() const;
+	void print(char fillSym = '_', char splitSym = '|') const;
 	CalcFncVarController* controller();
 	~Calc();
 private:

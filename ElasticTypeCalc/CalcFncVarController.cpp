@@ -7,9 +7,7 @@ CalcFncVarController::CalcFncVarController() {
 		[](TypedNum num) {
 			return num.binOperator([](ElasticType type, double val) {
 				return std::pair<ElasticType, double>(
-					type.binOperator([](std::string type, int val) {
-						return std::pair<std::string, int>("", 1);
-					}), 
+					ElasticType(""),
 					sin(val*3.1415/180)
 				);
 			});
@@ -20,9 +18,7 @@ CalcFncVarController::CalcFncVarController() {
 		[](TypedNum num) {
 			return num.binOperator([](ElasticType type, double val) {
 				return std::pair<ElasticType, double>(
-					type.binOperator([](std::string type, int val) {
-						return std::pair<std::string, int>("", 1);
-					}),
+					ElasticType(""),
 					cos(val*3.1415 / 180)
 				);
 			});

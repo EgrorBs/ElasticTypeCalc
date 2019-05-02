@@ -43,7 +43,7 @@ std::string TypedNum::toString() const {
 		type = val.first.toString();
 		ret += cutLastNull(std::to_string(val.second));
 		if (type.size() > 0)
-			ret += "[" + type + "]";
+			ret += type;
 	}
 	return ret;
 }
@@ -92,7 +92,6 @@ std::string TypedNum::cutLastNull(std::string in) {
 TypedNum operator+(const TypedNum& left, const TypedNum& right) {
 	std::map<ElasticType, double> out = left.vals;
 	for (auto val : right.vals) {
-		std::cout << val.first.toString();
 		if (out.count(val.first) > 0)
 			out[val.first] += val.second;
 		else

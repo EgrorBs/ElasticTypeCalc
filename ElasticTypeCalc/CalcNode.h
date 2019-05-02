@@ -7,15 +7,17 @@
 
 class CalcNode {
 public:
+	enum NodeType { NUM, SUM, SUB, MUL, DIV, POW, BRC, FNC, VAR };
+
 	CalcNode(std::string exp = "", CalcFncVarController* fncVar = nullptr);
 	~CalcNode();
 	
 	void parse();
 	TypedNum comp();
 	TypedNum cComp() const;
-	void print(int tabs = 0) const;
+	std::string getExp() const;
+	std::stringstream toLinedText(int level = -1) const;
 
-	enum NodeType { NUM, SUM, SUB, MUL, DIV, POW, BRC, FNC, VAR };
 private:
 	NodeType type;
 	std::string exp;
@@ -26,5 +28,7 @@ private:
 	bool isCached = false;
 
 	CalcFncVarController* fncVar = nullptr;
+
+	friend std::string toLinedText(int tabs);
 };
 

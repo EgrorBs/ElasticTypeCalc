@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Calc.h"
 
+#include <sstream>
+#include <iostream>
 
 Calc::Calc(std::string exp): 
 	exp(exp) {
@@ -29,9 +31,10 @@ void Calc::parse() {
 }
 
 void Calc::print() const {
-	if (this->root)
-		return this->root->print();
-	else
+	if (this->root) {
+		std::cout << this->root->toLinedText().str() << std::endl;
+		return;
+	} else
 		throw "no parsed";
 }
 

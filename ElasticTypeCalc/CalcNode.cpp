@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CalcNode.h"
 
+#include <iomanip>
+#include <sstream>
 #include <functional>
 #include <cctype>
 #include <array>
@@ -194,36 +196,95 @@ TypedNum CalcNode::cComp() const
 	}
 }
 
-void CalcNode::print(int tabsC) const {
-	std::string tabs;
-	for (int i = 0; i < tabsC; i++)
-		tabs += "|  ";
+std::string CalcNode::getExp() const {
+	return this->exp;
+}
 
-	if (this->left && this->type != BRC)
-		this->left->print(tabsC + 1);
+std::string centerAlign(int len, std::string text, char fill = ' ') {
+	int empty = len - text.length();
 
-	if (this->left && this->type == BRC) {
-		std::cout << tabs << " (" << std::endl;
-		this->left->print(tabsC);
+	if (empty < 0 && len > 1)
+		return text.substr(0, len - 1) + "#";
+
+	if (empty < 0)
+		return text.substr(0, len);
+
+	std::string prev, post;
+
+	for (int i = 0; i < empty / 2; i++)
+		prev += fill;
+
+	for (int i = 0; i < empty - prev.length(); i++)
+		post += fill;
+
+	return prev + text + post;
+}
+
+std::stringstream CalcNode::toLinedText(int level) const {
+	std::stringstream ret;
+	if (level < 0) {
+		std::string tmp;
+		bool isEmpty = true;
+		for (int i = 0; i < 25; i++) {
+			tmp = this->toLinedText(i).str();
+			isEmpty = true;
+			for (auto sym : tmp) {
+				if (sym != ' ' && sym != '|') {
+					isEmpty = false;
+					ret << std::setw(2) << i << ": ";
+					break;
+				}
+			}
+			if (!isEmpty)
+				ret << tmp << std::endl;
+			else
+				break;
+		}
+
+		return ret;
 	}
-	std::cout << tabs;
-
-	std::string value;
-
-	if (this->isCached)
-		value = "(*" + this->val.toString() + "*)";
-
-	switch (this->type) {
-		case NUM: std::cout << this->val.toString() << std::endl; break;
-		case VAR: std::cout << "$" << this->symName << ": " << value << std::endl; break;
-		case FNC: std::cout << "#" << this->symName << ": " << value << std::endl; break;
-		case SUM: std::cout << "|  + " << value << std::endl; break;
-		case SUB: std::cout << "|  - " << value << std::endl; break;
-		case MUL: std::cout << "|  * " << value << std::endl; break;
-		case DIV: std::cout << "|  / " << value << std::endl; break;
-		case POW: std::cout << "|  ^ " << value << std::endl; break;
-		case BRC: std::cout << " )" << std::endl; break;
+	if (level > 0) {
+		if (this->type == NUM || this->type == VAR)
+			return std::stringstream();
+		if (this->left != nullptr)
+			ret << centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1).str());
+		if (this->left != nullptr && this->right != nullptr)
+			ret << "|";
+		if (this->right != nullptr)
+			ret << centerAlign(this->right->getExp().length(), this->right->toLinedText(level - 1).str());
 	}
-	if (this->right)
-		this->right->print(tabsC + 1);
+	if (level == 0) {
+		char oper = '\0';
+		switch (this->type) {
+		case NUM:
+			return std::stringstream();
+		break;
+		case SUM: oper = '+'; break;
+		case SUB: oper = '-'; break;
+		case MUL: oper = '*'; break;
+		case DIV: oper = '/'; break;
+		case POW: oper = '^'; break;
+		case BRC:
+			ret << "("
+				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString())
+				<< ")";
+			break;
+		case VAR:
+			ret << this->symName;
+		break;
+		case FNC:
+			ret << this->symName << '(' << centerAlign(this->left->getExp().length(), this->left->cComp().toString()) << ')';
+		break;
+		}
+
+		if (oper != '\0') {
+			ret << std::setfill('.')
+				<< centerAlign(this->left->getExp().length(), this->left->cComp().toString())
+				<< oper
+				<< centerAlign(this->right->getExp().length(), this->right->cComp().toString());
+		}
+	}
+
+	return std::stringstream()
+		<< centerAlign(this->exp.length(), ret.str());
 }

@@ -173,7 +173,7 @@ TypedNum CalcNode::comp() {
 			case BRC: this->val = this->left->comp(); break;
 			case FNC: this->val = this->fncVar->compFnc(this->symName, this->left->comp()); break;
 			case VAR: this->val = this->fncVar->compVar(this->symName); break;
-			default: throw std::exception("Comp: unknown type!");
+			default: std::cerr << "Comp: unknown type!";
 		}
 		this->isCached = true;
 	}
@@ -192,7 +192,7 @@ TypedNum CalcNode::cComp() const
 		case BRC: return this->left->cComp();
 		case FNC: return this->fncVar->compFnc(this->symName, this->left->comp());
 		case VAR: return this->fncVar->compVar(this->symName);
-		default: throw std::exception("cComp: unknown type!");
+		default: std::cerr << "cComp: unknown type!";
 	}
 }
 
@@ -220,13 +220,13 @@ std::string centerAlign(int len, std::string text, char fill = ' ') {
 	return prev + text + post;
 }
 
-std::stringstream CalcNode::toLinedText(int level, char fillChar, char splitChar) const {
+std::string CalcNode::toLinedText(int level, char fillChar, char splitChar) const {
 	std::stringstream ret;
 	if (level < 0) {
 		std::string tmp;
 		bool isEmpty = true;
 		for (int i = 0; i < 256; i++) {
-			tmp = this->toLinedText(i, fillChar, splitChar).str();
+			tmp = this->toLinedText(i, fillChar, splitChar);
 			isEmpty = true;
 			for (auto sym : tmp) {
 				if (sym != ' ' && sym != fillChar && sym != splitChar) {
@@ -241,34 +241,34 @@ std::stringstream CalcNode::toLinedText(int level, char fillChar, char splitChar
 				break;
 		}
 
-		return ret;
+		return ret.str();
 	}
 	if (level > 0) {
 		if (this->type == NUM || this->type == VAR)
-			return std::stringstream();
+			return "";
 		if (this->type == FNC) {
 			int alN = int(this->symName.length() / 2. + 0.5) + 1;
 			std::string align = centerAlign(alN, "", ' ');
-			ret << align + splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ') + splitChar;
-			return ret;
+			ret << align + splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar), ' ') + splitChar;
+			return ret.str();
 		}
 		if (this->type == BRC) {
-			ret << splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ') + splitChar;
-			return ret;
+			ret << splitChar + centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar), ' ') + splitChar;
+			return ret.str();
 		}
 		if (this->left != nullptr)
-			ret << centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar).str(), ' ');
+			ret << centerAlign(this->left->getExp().length(), this->left->toLinedText(level - 1, fillChar, splitChar), ' ');
 		if (this->left != nullptr && this->right != nullptr)
 			ret << splitChar;
 		if (this->right != nullptr)
-			ret << centerAlign(this->right->getExp().length(), this->right->toLinedText(level - 1, fillChar, splitChar).str(), ' ');
-		return ret;
+			ret << centerAlign(this->right->getExp().length(), this->right->toLinedText(level - 1, fillChar, splitChar), ' ');
+		return ret.str();
 	}
 	if (level == 0) {
 		char oper = '\0';
 		switch (this->type) {
 		case NUM:
-			return std::stringstream();
+			return "";
 		break;
 		case SUM: oper = '+'; break;
 		case SUB: oper = '-'; break;
@@ -296,6 +296,5 @@ std::stringstream CalcNode::toLinedText(int level, char fillChar, char splitChar
 		}
 	}
 
-	return std::stringstream()
-		<< centerAlign(this->exp.length(), ret.str(), fillChar);
+	return centerAlign(this->exp.length(), ret.str(), fillChar);
 }

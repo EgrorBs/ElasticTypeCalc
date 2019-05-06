@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CalcFncVarController.h"
-
+#include <cmath>
 
 CalcFncVarController::CalcFncVarController() {
 	this->setFnc("sin", new std::function<TypedNum(TypedNum)>(

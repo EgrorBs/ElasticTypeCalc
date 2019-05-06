@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ElasticType.h"
-
+#include <cmath>
 
 ElasticType::ElasticType(std::string val) {
 	this->types[val] = 1;
@@ -115,12 +115,12 @@ bool operator<(const ElasticType& left, const ElasticType& right) {
 
 	unsigned int leftSum = 0;
 	for (auto pair : left.types) {
-		leftSum += abs(pair.second);
+		leftSum += std::abs(pair.second);
 	}
 
 	unsigned int rightSum = 0;
 	for (auto pair : right.types) {
-		rightSum += abs(pair.second);
+		rightSum += std::abs(pair.second);
 	}
 
 	if (leftSum < rightSum)
@@ -135,12 +135,12 @@ bool operator==(const ElasticType& left, const ElasticType& right) {
 
 	unsigned int leftSum = 0;
 	for (auto pair : left.types) {
-		leftSum += abs(pair.second);
+		leftSum += std::abs(pair.second);
 	}
 
 	unsigned int rightSum = 0;
 	for (auto pair : right.types) {
-		rightSum += abs(pair.second);
+		rightSum += std::abs(pair.second);
 	}
 
 	if (leftSum != rightSum)

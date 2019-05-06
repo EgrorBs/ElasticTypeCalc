@@ -16,7 +16,7 @@ public:
 	TypedNum comp();
 	TypedNum cComp() const;
 	std::string getExp() const;
-	std::stringstream toLinedText(int level = -1, char fillChar = ' ', char splitChar = ' ') const;
+	std::string toLinedText(int level = -1, char fillChar = ' ', char splitChar = ' ') const;
 
 private:
 	NodeType type;

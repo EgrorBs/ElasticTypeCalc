@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <iostream>
+#include <cstdlib>
 
 std::vector<std::string> strSplit(std::string str, char sym) {
 	std::vector<std::string> strs;
@@ -69,10 +70,10 @@ double TypedNum::getVal(std::string str) {
 	int i = 0;
 	for (i = 0; i < str.length() && (isdigit(str[i]) || str[i] == '.'); i++);
 	if (i == str.length())
-		return std::stod(str);
+		return std::strtod(str.c_str(), nullptr);
 	if (i == 0)
 		return 1;
-	return std::stod(str.substr(0, i));
+	return std::strtod(str.substr(0, i).c_str(), nullptr);
 }
 
 std::string TypedNum::getType(std::string str) {
@@ -84,9 +85,7 @@ std::string TypedNum::getType(std::string str) {
 std::string TypedNum::cutLastNull(std::string in) {
 	int i = 0;
 	for (i = in.length() - 1; i >= 0 && (in[i] == '0'); i--);
-	if (in[i] == '.')
-		i--;
-	return in.substr(0, i + 1);
+	return in;//.substr(0, i + 1);
 }
 
 TypedNum operator+(const TypedNum& left, const TypedNum& right) {

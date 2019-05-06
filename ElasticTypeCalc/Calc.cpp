@@ -50,15 +50,15 @@ void Calc::parse() {
 
 void Calc::print(char fillSym, char splitSym) const {
 	if (this->root) {
-		std::string out = this->root->toLinedText(-1, fillSym, splitSym).str();
+		std::string out = this->root->toLinedText(-1, fillSym, splitSym);
 		std::cout << "mapping colors...\n" << out;
-		out = std::regex_replace(out, std::regex(R"(((\-|)([0-9])+(\.([0-9]))*))"), ANSI_CLR_VAL + ANSI_ULN + "$1" + ANSI_CLR_NULL);
+		/*out = std::regex_replace(out, std::regex(R"(((\-|)([0-9])+(\.([0-9]))*))"), ANSI_CLR_VAL + ANSI_ULN + "$1" + ANSI_CLR_NULL);
 		out = std::regex_replace(out, std::regex(R"((([a-ln-zA-Z])([a-zA-Z])*))"), ANSI_RGB_FG(255, 128, 255) + "$1" + ANSI_CLR_NULL);
 		out = std::regex_replace(out, std::regex(R"((\+|\-|\*|\/)([^0-9]))"), ANSI_CLR_OP + ANSI_ULN + "$1" + ANSI_CLR_NULL + "$2");
 		out = std::regex_replace(out, std::regex(R"((\)" + std::string(1, fillSym) + R"())"), ANSI_RGB_FG(255, 64, 64) + "$1" + ANSI_CLR_NULL);
 		out = std::regex_replace(out, std::regex(R"((\(|\)))"), ANSI_RGB_FG(64, 255, 64) + "$1" + ANSI_CLR_NULL);
 		out = std::regex_replace(out, std::regex(R"((\)" + std::string(1, splitSym) + R"())"), ANSI_RGB_FG(255, 64, 64) + "$1" + ANSI_CLR_NULL);
-		std::cout << "mapped colors.\n" << out;
+		std::cout << "mapped colors.\n" << out;*/
 		return;
 	} else
 		throw "no parsed";
